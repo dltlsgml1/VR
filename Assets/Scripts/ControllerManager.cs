@@ -7,8 +7,8 @@ public class ControllerManager : MonoBehaviour {
     public static ControllerManager Instance = null;
     public bool MainTrigger;
     public bool PadTrigger;
-    
-    
+
+    private OVRTrackedRemote oVRTrackedRemote;
     private SteamVR_TrackedObject trackedObj;
     private SteamVR_Controller.Device Controller
     {
@@ -18,6 +18,7 @@ public class ControllerManager : MonoBehaviour {
 
     private void Awake()
     {
+        
         if (Instance == null)
             Instance = this;
         else if (Instance != null)
@@ -36,13 +37,13 @@ public class ControllerManager : MonoBehaviour {
 	void Update () {
         
 	}
-
+    
     public bool Get(int Input)
     {
         switch(Input)
         {
             case (int)KeyList.Trigger:
-                if(OVRInput.Get(OVRInput.Button.PrimaryHandTrigger))
+                if(OVRInput.Get(OVRInput.Button.PrimaryIndexTrigger))
                 {
                     return true;
                 }
@@ -61,13 +62,13 @@ public class ControllerManager : MonoBehaviour {
         switch (Input)
         {
             case (int)KeyList.Trigger:
-                if (OVRInput.GetDown(OVRInput.Button.PrimaryHandTrigger))
+                if (OVRInput.GetDown(OVRInput.Button.PrimaryIndexTrigger))
                 {
                     return true;
                 }
                 break;
             case (int)KeyList.PadClick:
-                if (OVRInput.GetDown(OVRInput.Button.PrimaryHandTrigger))
+                if (OVRInput.GetDown(OVRInput.Button.PrimaryTouchpad))
                 {
                     return true;
                 }
