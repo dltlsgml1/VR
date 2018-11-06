@@ -142,7 +142,6 @@ GameObject:
   - component: {fileID: 65257964722356302}
   - component: {fileID: 23425871195110524}
   - component: {fileID: 54463645665635616}
-  - component: {fileID: 114351242602601072}
   m_Layer: 0
   m_Name: kabe
   m_TagString: Untagged
@@ -211,6 +210,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4837446982209696}
+  - component: {fileID: 114294990715971712}
   m_Layer: 0
   m_Name: BreakWall
   m_TagString: Untagged
@@ -933,12 +933,12 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &114351242602601072
+--- !u!114 &114294990715971712
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1435267089265806}
+  m_GameObject: {fileID: 1654392054407570}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0ac6f5074774dbf4ca523b37d9762947, type: 3}
@@ -947,6 +947,7 @@ MonoBehaviour:
   isOn: 0
   isReset: 0
   Debug_On: 0
+  m_Kabe: {fileID: 1435267089265806}
   m_GarekiMat: {fileID: 2100000, guid: 7ef71bb72d4e03844ab8d7ab98807499, type: 2}
 --- !u!114 &114356584975118064
 MonoBehaviour:
@@ -959,4 +960,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e65a5b3dff8021348a21cacaf89a96d0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Gimmick: {fileID: 1435267089265806}
+  m_Gimmick: {fileID: 1654392054407570}

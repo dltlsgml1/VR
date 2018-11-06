@@ -16,8 +16,11 @@ public class kabehakai : MonoBehaviour {
     [SerializeField]
     bool Debug_On;
 
-    //--このゲームオブジェクトのマテリアル--//
+    //--かべのマテリアル--//
     private Material m_mat;
+    //--かべ--//
+    [SerializeField]
+    GameObject m_Kabe;
     //--がれきのマテリアル--//
     [SerializeField]
     Material m_GarekiMat;
@@ -29,16 +32,16 @@ public class kabehakai : MonoBehaviour {
     private Quaternion m_OldRot;
 
 
-	// Use this for initialization
+	// Use m_Kabe for initialization
 	void Start () {
 
-        m_mat = this.GetComponent<MeshRenderer>().material;
+        m_mat = m_Kabe.GetComponent<MeshRenderer>().material;
         //--まだ動かさないので動きを固定--//
-        m_RB = this.GetComponent<Rigidbody>();
+        m_RB = m_Kabe.GetComponent<Rigidbody>();
         m_RB.constraints = RigidbodyConstraints.FreezeAll;
         //--リセット用の値取得--//
-        m_OldPos = this.transform.localPosition;
-        m_OldRot = this.transform.localRotation;
+        m_OldPos = m_Kabe.transform.localPosition;
+        m_OldRot = m_Kabe.transform.localRotation;
 
     }
 	
@@ -96,10 +99,10 @@ public class kabehakai : MonoBehaviour {
             m_GarekiMat.color = col;
 
             //--ポジションを戻す--//
-            m_RB = this.GetComponent<Rigidbody>();
+            m_RB = m_Kabe.GetComponent<Rigidbody>();
             m_RB.constraints = RigidbodyConstraints.FreezeAll;
-            this.transform.localPosition = m_OldPos;
-            this.transform.localRotation = m_OldRot;
+            m_Kabe.transform.localPosition = m_OldPos;
+            m_Kabe.transform.localRotation = m_OldRot;
             isReset = false;
             isOn = false;
         } 
@@ -118,7 +121,7 @@ public class kabehakai : MonoBehaviour {
     public void SwitchOn()
     {
         Vector3 vec = new Vector3(0, 0, 10);
-        this.transform.rotation = Quaternion.Euler(vec);
+        m_Kabe.transform.rotation = Quaternion.Euler(vec);
         m_RB.constraints = RigidbodyConstraints.None | RigidbodyConstraints.FreezePositionZ;
     }
     //--透明にする--//
