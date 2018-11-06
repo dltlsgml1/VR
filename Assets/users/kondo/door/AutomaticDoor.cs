@@ -8,20 +8,23 @@ public class AutomaticDoor : MonoBehaviour {
     bool isOpen = false;
     [SerializeField]
     float m_OpenSpeed;
-    [SerializeField]
-    float m_OpenDistans;
+    //[SerializeField]
+    float m_OpenDistans =0.8f;
 
     [SerializeField]
     Transform m_LeftDoor;
     [SerializeField]
     Transform m_RightDoor;
 
-    Vector3 m_Leftpos_old;
-    Vector3 m_Rightpos_old;
+
+    //--ドアの初期位置格納用--//
+    private Vector3 m_Leftpos_old;
+    private Vector3 m_Rightpos_old;
 
 
     // Use this for initialization
     void Start () {
+        //--初期位置格納--//
         m_Leftpos_old = m_LeftDoor.localPosition;
         m_Rightpos_old = m_RightDoor.localPosition;
     }
@@ -30,7 +33,8 @@ public class AutomaticDoor : MonoBehaviour {
 	void Update () {
 
 
-
+        //--開閉処理--//
+        //--開く--//
         if (isOpen)
         {
             Vector3 vec;
@@ -47,6 +51,7 @@ public class AutomaticDoor : MonoBehaviour {
                 m_RightDoor.localPosition = vec;
             }
         }
+        //--閉める--//
         else
         {
             Vector3 vec;
@@ -71,5 +76,6 @@ public class AutomaticDoor : MonoBehaviour {
 
     public void DoorOpen() { isOpen = true; }
     public void DoorClose() { isOpen = false; }
+    public void IsDoor() { isOpen = !isOpen; }
 
 }

@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 4776297702564638}
   - component: {fileID: 114223896673231950}
   m_Layer: 0
-  m_Name: AUTOMATIC_SLIDING_DOOR_FBX 1
+  m_Name: AutomaticDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -417,7 +417,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1276122876552002}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.52, z: 0}
+  m_LocalPosition: {x: 10.28, y: 0.52, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4235976082307618}
@@ -987,8 +987,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63501ba4f60c1c840be30192ccdbc2a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isOpen: 1
+  isOpen: 0
   m_OpenSpeed: 1
-  m_OpenDistans: 0.8
   m_LeftDoor: {fileID: 4471509763840496}
   m_RightDoor: {fileID: 4087743324492986}
