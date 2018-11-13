@@ -14,8 +14,11 @@ public class AutomaticDoor : MonoBehaviour {
     [SerializeField]
     Transform m_LeftDoor;
     [SerializeField]
+    Transform m_LeftDoorFixed;
+    [SerializeField]
     Transform m_RightDoor;
-
+    [SerializeField]
+    Transform m_RightDoorFixed;
 
     //--ドアの初期位置格納用--//
     private Vector3 m_Leftpos_old;
@@ -37,35 +40,41 @@ public class AutomaticDoor : MonoBehaviour {
         //--開く--//
         if (isOpen)
         {
-            Vector3 vec;
-            if(m_LeftDoor.localPosition.x < m_Leftpos_old.x + m_OpenDistans)
+            //--距離が離れているなら--//
+            //LEFT
+            float dis = Vector3.Distance(m_LeftDoor.localPosition, m_LeftDoorFixed.localPosition);
+            if (dis > 0)
             {
-                vec = m_LeftDoor.localPosition;
-                vec.x += m_OpenSpeed * Time.deltaTime;
-                m_LeftDoor.localPosition = vec; 
+                //--移動--//
+                m_LeftDoor.localPosition = Vector3.Lerp(m_LeftDoor.localPosition, m_LeftDoorFixed.localPosition, m_OpenSpeed * Time.deltaTime);
             }
-            if (m_RightDoor.localPosition.x > m_Rightpos_old.x - m_OpenDistans)
+
+            //--距離が離れているなら--//
+            dis = Vector3.Distance(m_RightDoor.localPosition, m_RightDoorFixed.localPosition);
+            if (dis > 0)
             {
-                vec = m_RightDoor.localPosition;
-                vec.x -= m_OpenSpeed * Time.deltaTime;
-                m_RightDoor.localPosition = vec;
+                //--移動--//
+                m_RightDoor.localPosition = Vector3.Lerp(m_RightDoor.localPosition, m_RightDoorFixed.localPosition, m_OpenSpeed * Time.deltaTime);
             }
         }
         //--閉める--//
         else
         {
-            Vector3 vec;
-            if (m_LeftDoor.localPosition.x > m_Leftpos_old.x)
+            //--距離が離れているなら--//
+            //LEFT
+            float dis = Vector3.Distance(m_LeftDoor.localPosition, m_Leftpos_old);
+            if (dis > 0)
             {
-                vec = m_LeftDoor.localPosition;
-                vec.x -= m_OpenSpeed * Time.deltaTime;
-                m_LeftDoor.localPosition = vec;
+                //--移動--//
+                m_LeftDoor.localPosition = Vector3.Lerp(m_LeftDoor.localPosition, m_Leftpos_old, m_OpenSpeed * Time.deltaTime);
             }
-            if (m_RightDoor.localPosition.x < m_Rightpos_old.x)
+
+            //--距離が離れているなら--//
+            dis = Vector3.Distance(m_RightDoor.localPosition, m_Rightpos_old);
+            if (dis > 0)
             {
-                vec = m_RightDoor.localPosition;
-                vec.x += m_OpenSpeed * Time.deltaTime;
-                m_RightDoor.localPosition = vec;
+                //--移動--//
+                m_RightDoor.localPosition = Vector3.Lerp(m_RightDoor.localPosition, m_Rightpos_old, m_OpenSpeed * Time.deltaTime);
             }
         }
 
