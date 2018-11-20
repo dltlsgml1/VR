@@ -38,11 +38,16 @@ public class kon_tele : MonoBehaviour
     [SerializeField]
     LayerMask teleportMask;
 
-    private bool shouldTeleport;
 
+    [SerializeField]
     GameObject m_NextObj;
+    [SerializeField]
     GameObject m_OldObj;
 
+    private bool isGoal;
+
+
+    //////////////////////////////////
     // カメラの回転速度を格納する変数
     [SerializeField]
     Vector2 rotationSpeed;
@@ -53,11 +58,12 @@ public class kon_tele : MonoBehaviour
     private Vector2 lastMousePosition;
     // カメラの角度を格納する変数（初期値に0,0を代入）
     private Vector2 newAngle = new Vector2(0, 0);
-
+    /////////////////////////////////////
 
     // Use this for initialization
     void Start()
     {
+        isGoal = false;
 
         //レーザーのオブジェクトをプレハブから取得
         laser = Instantiate(laserPrefab);
@@ -77,6 +83,9 @@ public class kon_tele : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+
+
         //--マウス操作時--//
         if(isMouse)
         {
@@ -88,7 +97,8 @@ public class kon_tele : MonoBehaviour
                 if (Physics.Raycast(ray, out hit, 100, teleportMask))
                 {
                     //Debug.Log("traclobj" + trackedObj.transform.position.ToString());
-                    Debug.Log("hitPoint" + hit.point.ToString());
+                   // Debug.Log("hitPoint" + hit.point.ToString());
+
 
                     m_NextObj = hit.collider.gameObject;
 
@@ -97,7 +107,6 @@ public class kon_tele : MonoBehaviour
 
                     reticle.SetActive(true);
                     teleportReticleTransform.position = hitPoint + teleportReticleOffset;
-                    shouldTeleport = true;
                 }
                 else
                 {
@@ -109,6 +118,7 @@ public class kon_tele : MonoBehaviour
             }
             if (Input.GetMouseButtonUp(0))
             {
+                GimmickCheck();
                 Teleport();
             }
 
@@ -153,6 +163,9 @@ public class kon_tele : MonoBehaviour
             }
 
         }
+
+
+
     }
 
 
@@ -174,21 +187,76 @@ public class kon_tele : MonoBehaviour
     private void Teleport()
     {
 
-        if (!laser.activeSelf) return;
-            
-        shouldTeleport = false;
+        if (!reticle.activeSelf) return;
+
+        Debug.Log(m_NextObj + m_NextObj.tag);
+        Debug.Log("Old" + m_OldObj);
+
         reticle.SetActive(false);
         laser.SetActive(false);
         Vector3 difference = m_cameraRigTransform.position - m_headTransform.position;
         difference.y = 0.2f;
-        m_cameraRigTransform.position = hitPoint + difference;
-
-        if(m_OldObj!=null) m_OldObj.GetComponent<SphereCollider>().enabled = true;
-        m_OldObj = m_NextObj;
-        m_OldObj.GetComponent<SphereCollider>().enabled = false;
+        m_cameraRigTransform.position = m_NextObj.transform.position + difference;
 
 
 
+        if (m_OldObj.tag == "Gimmick")
+        {
+            //Debug.Log("aaaaaaaaa");
+            m_OldObj.GetComponent<BoxCollider>().enabled = true;
+        }
+        else
+        {
+            //Debug.Log("bbbbbbbbbbb");
+            m_OldObj.GetComponent<SphereCollider>().enabled = true;
+        }
 
+        if(m_NextObj.tag == "Gimmick")
+        {
+            m_OldObj = m_NextObj;
+            m_OldObj.GetComponent<BoxCollider>().enabled = false;
+        }
+        else
+        {
+            m_OldObj = m_NextObj;
+            m_OldObj.GetComponent<SphereCollider>().enabled = false;
+        }
+
+
+    }
+
+
+
+    private void GimmickCheck()
+    {
+        if(m_NextObj.tag == "Gimmick")
+        {
+            if(m_NextObj.name == "Goal")
+            {
+                isGoal = true;
+            }
+            if(m_NextObj.name == "Door")
+            {
+                m_NextObj.GetComponent<AutomaticDoor>().DoorOpen();
+                m_NextObj.GetComponent<BoxCollider>().enabled = false;
+                m_NextObj = m_OldObj;
+            }
+        }
+    }
+
+    public bool ISGoal()
+    {
+        return isGoal;
+    }
+
+
+    public void SetNextStage(GameObject obj)
+    {
+        m_cameraRigTransform.position = obj.transform.position;
+        if(m_OldObj!=null)m_OldObj.GetComponent<BoxCollider>().enabled = true;
+        m_OldObj = obj;
+        m_OldObj.GetComponent<BoxCollider>().enabled = false;
+        isGoal = false;
+        m_NextObj = null;
     }
 }

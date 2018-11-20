@@ -4,4 +4,13 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/users/kondo/Scenes/kon_Title.unity
+    guid: 8827a4cdeb912344fbd701110ebd73dc
+  - enabled: 1
+    path: Assets/users/kondo/Scenes/kondo_Test.unity
+    guid: 7142414fe8306b244b7ca83aea0a58c9
+  - enabled: 1
+    path: Assets/users/kondo/Scenes/kon_result.unity
+    guid: f1d59d433e3a04345ab56e56bf57e61c

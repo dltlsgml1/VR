@@ -8,8 +8,6 @@ public class AutomaticDoor : MonoBehaviour {
     bool isOpen = false;
     [SerializeField]
     float m_OpenSpeed;
-    //[SerializeField]
-    float m_OpenDistans =0.8f;
 
     [SerializeField]
     Transform m_LeftDoor;
@@ -25,11 +23,21 @@ public class AutomaticDoor : MonoBehaviour {
     private Vector3 m_Rightpos_old;
 
 
+    [Header("オプション")]
+    [SerializeField]
+    bool IsAutoClose;
+    //--AutoClose用変数--//
+    [SerializeField]
+    float m_AutoCloseTime;
+    float m_AutoCloseCount;
+
+
     // Use this for initialization
     void Start () {
         //--初期位置格納--//
         m_Leftpos_old = m_LeftDoor.localPosition;
         m_Rightpos_old = m_RightDoor.localPosition;
+        m_AutoCloseCount = 0;
     }
 	
 	// Update is called once per frame
@@ -78,9 +86,31 @@ public class AutomaticDoor : MonoBehaviour {
             }
         }
 
-
+        AutoClose();
 
 	}
+
+
+    private void AutoClose()
+    {
+        //--自動モードでないとき　ドアが閉まっているときは無視--//
+        if (!IsAutoClose || !isOpen)
+        {
+            m_AutoCloseCount = 0;
+            return;
+        }
+
+        m_AutoCloseCount +=  1 * Time.deltaTime;
+
+        if(m_AutoCloseCount > m_AutoCloseTime)
+        {
+            m_AutoCloseCount = 0;
+            isOpen = false;
+            this.GetComponent<BoxCollider>().enabled = true;
+        }
+
+
+    }
 
 
     public void DoorOpen() { isOpen = true; }
