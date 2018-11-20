@@ -8,7 +8,7 @@ public class kon_tele : MonoBehaviour
     [SerializeField]
     bool isMouse;
 
-
+    #region Teleport
     //--Laser Prefab--//
     [SerializeField]
     GameObject laserPrefab;
@@ -37,16 +37,21 @@ public class kon_tele : MonoBehaviour
 
     [SerializeField]
     LayerMask teleportMask;
-
+    #endregion
 
     [SerializeField]
     GameObject m_NextObj;
     [SerializeField]
     GameObject m_OldObj;
 
+    public int m_LastMoveCount;
+
     private bool isGoal;
+    [SerializeField]
+    private bool isGameOver;
 
 
+    #region Camera
     //////////////////////////////////
     // カメラの回転速度を格納する変数
     [SerializeField]
@@ -59,11 +64,27 @@ public class kon_tele : MonoBehaviour
     // カメラの角度を格納する変数（初期値に0,0を代入）
     private Vector2 newAngle = new Vector2(0, 0);
     /////////////////////////////////////
+    #endregion
+
+
+    #region VR_Controller
+    SteamVR_TrackedObject trackedObj;
+    private SteamVR_Controller.Device Controller
+    {
+        get { return SteamVR_Controller.Input((int)trackedObj.index); }
+    }
+    void Awake()
+    {
+        trackedObj = GetComponent<SteamVR_TrackedObject>();
+    }
+    #endregion
+
 
     // Use this for initialization
     void Start()
     {
         isGoal = false;
+        isGameOver = false;
 
         //レーザーのオブジェクトをプレハブから取得
         laser = Instantiate(laserPrefab);
@@ -96,10 +117,6 @@ public class kon_tele : MonoBehaviour
                 Ray ray =   m_camera.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out hit, 100, teleportMask))
                 {
-                    //Debug.Log("traclobj" + trackedObj.transform.position.ToString());
-                   // Debug.Log("hitPoint" + hit.point.ToString());
-
-
                     m_NextObj = hit.collider.gameObject;
 
                     hitPoint = hit.collider.gameObject.transform.position;
@@ -123,45 +140,42 @@ public class kon_tele : MonoBehaviour
             }
 
 
-            if (Input.GetMouseButtonDown(1))
+            //--マウスでカメラを動かすための関数--//
+            CameraRot();
+           
+
+        }
+        else
+        {
+            //--reserpoint--//
+            if (Controller.GetPress(SteamVR_Controller.ButtonMask.Touchpad))
             {
-                // カメラの角度を変数"newAngle"に格納
-                newAngle = m_camera.transform.localEulerAngles;
-                // マウス座標を変数"lastMousePosition"に格納
-                lastMousePosition = Input.mousePosition;
-            }
-            if (Input.GetMouseButton(1))
-            {
-                //カメラ回転方向の判定フラグが"true"の場合
-                if (!reverse)
+                RaycastHit hit;
+                Ray ray = m_camera.ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out hit, 100, teleportMask))
                 {
-                    // Y軸の回転：マウスドラッグ方向に視点回転
-                    // マウスの水平移動値に変数"rotationSpeed"を掛ける
-                    //（クリック時の座標とマウス座標の現在値の差分値）
-                    newAngle.y -= (lastMousePosition.x - Input.mousePosition.x) * rotationSpeed.y;
-                    // X軸の回転：マウスドラッグ方向に視点回転
-                    // マウスの垂直移動値に変数"rotationSpeed"を掛ける
-                    //（クリック時の座標とマウス座標の現在値の差分値）
-                    newAngle.x -= (Input.mousePosition.y - lastMousePosition.y) * rotationSpeed.x;
-                    // "newAngle"の角度をカメラ角度に格納
-                    m_camera.transform.localEulerAngles = newAngle;
-                    // マウス座標を変数"lastMousePosition"に格納
-                    lastMousePosition = Input.mousePosition;
+                    m_NextObj = hit.collider.gameObject;
+
+                    hitPoint = hit.collider.gameObject.transform.position;
+                    ShowLaser(hit);
+
+                    reticle.SetActive(true);
+                    teleportReticleTransform.position = hitPoint + teleportReticleOffset;
                 }
-                // カメラ回転方向の判定フラグが"reverse"の場合
-                else if (reverse)
+                else
                 {
-                    // Y軸の回転：マウスドラッグと逆方向に視点回転
-                    newAngle.y -= (Input.mousePosition.x - lastMousePosition.x) * rotationSpeed.y;
-                    // X軸の回転：マウスドラッグと逆方向に視点回転
-                    newAngle.x -= (lastMousePosition.y - Input.mousePosition.y) * rotationSpeed.x;
-                    // "newAngle"の角度をカメラ角度に格納
-                    m_camera.transform.localEulerAngles = newAngle;
-                    // マウス座標を変数"lastMousePosition"に格納
-                    lastMousePosition = Input.mousePosition;
+                    //laser.SetActive(false);
+                    reticle.SetActive(false);
+
                 }
+
             }
 
+            if (Controller.GetPressUp(SteamVR_Controller.ButtonMask.Touchpad))
+            {
+                GimmickCheck();
+                Teleport();
+            }
         }
 
 
@@ -187,7 +201,9 @@ public class kon_tele : MonoBehaviour
     private void Teleport()
     {
 
-        if (!reticle.activeSelf) return;
+        if (!reticle.activeSelf || m_LastMoveCount<=0) return;
+
+        m_LastMoveCount -= 1;
 
         Debug.Log(m_NextObj + m_NextObj.tag);
         Debug.Log("Old" + m_OldObj);
@@ -202,12 +218,10 @@ public class kon_tele : MonoBehaviour
 
         if (m_OldObj.tag == "Gimmick")
         {
-            //Debug.Log("aaaaaaaaa");
             m_OldObj.GetComponent<BoxCollider>().enabled = true;
         }
         else
         {
-            //Debug.Log("bbbbbbbbbbb");
             m_OldObj.GetComponent<SphereCollider>().enabled = true;
         }
 
@@ -231,9 +245,17 @@ public class kon_tele : MonoBehaviour
     {
         if(m_NextObj.tag == "Gimmick")
         {
-            if(m_NextObj.name == "Goal")
+            if (m_NextObj.name == "Goal")
             {
-                isGoal = true;
+                if (m_LastMoveCount <= 0)
+                {
+                    isGameOver = true;
+                    laser.SetActive(false);
+                }
+                else
+                {
+                    isGoal = true;
+                }
             }
             if(m_NextObj.name == "Door")
             {
@@ -242,21 +264,113 @@ public class kon_tele : MonoBehaviour
                 m_NextObj = m_OldObj;
             }
         }
+        else
+        {
+            if (m_LastMoveCount <= 0)
+            {
+                isGameOver = true;
+                laser.SetActive(false);
+            }
+        }
     }
+
+
+
+    //--マウスでカメラを動かすための関数--//
+    private void CameraRot()
+    {
+        if (Input.GetMouseButtonDown(1))
+        {
+            // カメラの角度を変数"newAngle"に格納
+            newAngle = m_camera.transform.localEulerAngles;
+            // マウス座標を変数"lastMousePosition"に格納
+            lastMousePosition = Input.mousePosition;
+        }
+        if (Input.GetMouseButton(1))
+        {
+            //カメラ回転方向の判定フラグが"true"の場合
+            if (!reverse)
+            {
+                // Y軸の回転：マウスドラッグ方向に視点回転
+                // マウスの水平移動値に変数"rotationSpeed"を掛ける
+                //（クリック時の座標とマウス座標の現在値の差分値）
+                newAngle.y -= (lastMousePosition.x - Input.mousePosition.x) * rotationSpeed.y;
+                // X軸の回転：マウスドラッグ方向に視点回転
+                // マウスの垂直移動値に変数"rotationSpeed"を掛ける
+                //（クリック時の座標とマウス座標の現在値の差分値）
+                newAngle.x -= (Input.mousePosition.y - lastMousePosition.y) * rotationSpeed.x;
+                // "newAngle"の角度をカメラ角度に格納
+                m_camera.transform.localEulerAngles = newAngle;
+                // マウス座標を変数"lastMousePosition"に格納
+                lastMousePosition = Input.mousePosition;
+            }
+            // カメラ回転方向の判定フラグが"reverse"の場合
+            else if (reverse)
+            {
+                // Y軸の回転：マウスドラッグと逆方向に視点回転
+                newAngle.y -= (Input.mousePosition.x - lastMousePosition.x) * rotationSpeed.y;
+                // X軸の回転：マウスドラッグと逆方向に視点回転
+                newAngle.x -= (lastMousePosition.y - Input.mousePosition.y) * rotationSpeed.x;
+                // "newAngle"の角度をカメラ角度に格納
+                m_camera.transform.localEulerAngles = newAngle;
+                // マウス座標を変数"lastMousePosition"に格納
+                lastMousePosition = Input.mousePosition;
+            }
+        }
+    }
+
+
+
+
+
+
+
+
 
     public bool ISGoal()
     {
         return isGoal;
     }
+    public bool ISGameOver()
+    {
+        return isGameOver;
+    }
 
 
-    public void SetNextStage(GameObject obj)
+    public void SetNextStage(GameObject obj, int count = 4)
     {
         m_cameraRigTransform.position = obj.transform.position;
         if(m_OldObj!=null)m_OldObj.GetComponent<BoxCollider>().enabled = true;
         m_OldObj = obj;
         m_OldObj.GetComponent<BoxCollider>().enabled = false;
         isGoal = false;
+        isGameOver = false;
         m_NextObj = null;
+
+        m_LastMoveCount = count;
+
+    }
+    public void ResetStage(GameObject obj, int count = 4)
+    {
+        m_cameraRigTransform.position = obj.transform.position;
+
+        if (m_OldObj.GetComponent<BoxCollider>() != null)
+        {
+            m_OldObj.GetComponent<BoxCollider>().enabled = true;
+        }
+        if (m_OldObj.GetComponent<SphereCollider>() != null)
+        {
+            m_OldObj.GetComponent<SphereCollider>().enabled = true;
+        }
+
+
+         m_OldObj = obj;
+        m_OldObj.GetComponent<BoxCollider>().enabled = false;
+        isGoal = false;
+        isGameOver = false;
+        m_NextObj = null;
+
+        m_LastMoveCount = count;
+
     }
 }
