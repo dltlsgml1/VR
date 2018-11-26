@@ -5,6 +5,7 @@ using Valve.VR;
 
 public class kon_tele : MonoBehaviour
 {
+
     [SerializeField]
     bool isMouse;
 
@@ -96,19 +97,18 @@ public class kon_tele : MonoBehaviour
 
         teleportReticleTransform = reticle.transform;
 
-         m_camera = m_head.GetComponent<Camera>();
-        m_headTransform = m_head.transform;
+         
 
     }
 
     // Update is called once per frame
     void Update()
     {
-
-
+        m_camera = m_head.GetComponent<Camera>();
+        m_headTransform = m_head.transform;
 
         //--マウス操作時--//
-        if(isMouse)
+        if (isMouse)
         {
             //--reserpoint--//
             if (Input.GetMouseButton(0))
@@ -243,35 +243,39 @@ public class kon_tele : MonoBehaviour
 
     private void GimmickCheck()
     {
-        if(m_NextObj.tag == "Gimmick")
+        if(m_NextObj !=null)
         {
-            if (m_NextObj.name == "Goal")
+            if (m_NextObj.tag == "Gimmick")
+            {
+                if (m_NextObj.name == "Goal")
+                {
+                    if (m_LastMoveCount <= 0)
+                    {
+                        isGameOver = true;
+                        laser.SetActive(false);
+                    }
+                    else
+                    {
+                        isGoal = true;
+                    }
+                }
+                if (m_NextObj.name == "Door")
+                {
+                    m_NextObj.GetComponent<AutomaticDoor>().DoorOpen();
+                    m_NextObj.GetComponent<BoxCollider>().enabled = false;
+                    m_NextObj = m_OldObj;
+                }
+            }
+            else
             {
                 if (m_LastMoveCount <= 0)
                 {
                     isGameOver = true;
                     laser.SetActive(false);
                 }
-                else
-                {
-                    isGoal = true;
-                }
-            }
-            if(m_NextObj.name == "Door")
-            {
-                m_NextObj.GetComponent<AutomaticDoor>().DoorOpen();
-                m_NextObj.GetComponent<BoxCollider>().enabled = false;
-                m_NextObj = m_OldObj;
             }
         }
-        else
-        {
-            if (m_LastMoveCount <= 0)
-            {
-                isGameOver = true;
-                laser.SetActive(false);
-            }
-        }
+        
     }
 
 
