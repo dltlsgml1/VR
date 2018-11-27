@@ -7,6 +7,8 @@ public class kon_tele : MonoBehaviour
 {
 
     [SerializeField]
+    GameObject Goal;
+    [SerializeField]
     bool isMouse;
 
     #region Teleport
@@ -179,7 +181,10 @@ public class kon_tele : MonoBehaviour
         }
 
 
-
+        if(Vector3.Distance(m_cameraRigTransform.position,Goal.transform.position)<0.5f)
+        {
+            isGoal = true;
+        }
     }
 
 

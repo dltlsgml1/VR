@@ -51,7 +51,7 @@ public class Kon_GameManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         m_NowStage = (int)STAGENO.STAGE01;
-        m_Kontere.SetNextStage(m_StageStart[m_NowStage]);
+        m_Kontere.SetNextStage(m_StageStart[m_NowStage],m_StageStart[m_NowStage].GetComponent<kon_StageStartMoveCount>().m_StageStartMoveCount);
         isFadeOut = false;
     }
 	

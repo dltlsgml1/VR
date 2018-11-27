@@ -6,6 +6,8 @@ public class Elevator : MonoBehaviour
 {
 
     [SerializeField]
+    GameObject Player;
+    [SerializeField]
     bool isUp = false;
     [SerializeField]
     float m_Speed;
@@ -21,45 +23,53 @@ public class Elevator : MonoBehaviour
     void Start()
     {
         //--初期位置格納--//
-        m_ElevatorObj_old = this.transform.localPosition;
+        m_ElevatorObj_old = this.transform.position;
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        if (Vector3.Distance((Player.transform.position), (m_ElevatorObj_old)) < 3.0f)
+        {
+            isUp = true;
+        }
+        
 
         //--上下処理--//
         //--上昇--//
         if (isUp)
         {
             Vector3 vec;
-            if (this.transform.localPosition.y < m_ElevatorObj_old.y + m_MoveDistans)
+            Vector3 vec2;
+            if (this.transform.position.y < m_ElevatorObj_old.y + m_MoveDistans)
             {
-                vec = this.transform.localPosition;
+                vec = this.transform.position;
+                vec2 = Player.transform.position;
                 vec.y += m_Speed * Time.deltaTime;
-                this.transform.localPosition = vec;
+                vec2.y += m_Speed * Time.deltaTime;
+                this.transform.position = vec;
+                Player.transform.position = vec2;
             }
             else
             {
                 vec = m_ElevatorObj_old ;
-                vec.y = m_MoveDistans;
-                this.transform.localPosition = vec;
+                vec.y = m_ElevatorObj_old.y +  m_MoveDistans;
+                this.transform.position = vec;
             }
         }
         //--下降--//
         else
         {
             Vector3 vec;
-            if (this.transform.localPosition.y > m_ElevatorObj_old.y)
+            if (this.transform.position.y > m_ElevatorObj_old.y)
             {
-                vec = this.transform.localPosition;
+                vec = this.transform.position;
                 vec.y -= m_Speed * Time.deltaTime;
-                this.transform.localPosition = vec;
+                this.transform.position = vec;
             }
             else
             {
-                this.transform.localPosition = m_ElevatorObj_old;
+                this.transform.position = m_ElevatorObj_old;
             }
         }
 
