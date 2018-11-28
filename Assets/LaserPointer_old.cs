@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Valve.VR;
 
-public class LaserPointer : MonoBehaviour {
+public class LaserPointer_old : MonoBehaviour {
     
     //--Laser Prefab--//
     public GameObject laserPrefab;
