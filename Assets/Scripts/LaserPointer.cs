@@ -5,6 +5,9 @@ using Valve.VR;
 
 public class LaserPointer : MonoBehaviour {
 
+    public GameObject HitObject = null;
+    public int MoveCount;
+
     public bool IsMouse;
     public bool MouseReverse;
 
@@ -30,9 +33,12 @@ public class LaserPointer : MonoBehaviour {
     public Camera PlayerCamera;
 
     public Vector2 RotSpeed;
-    bool Reverse;
+    public bool Reverse;
     private Vector2 LastMousePos;
     private Vector2 NewAngle = new Vector2(0, 0);
+
+    public bool IsGoal = false;
+    public bool IsGameOver = false;
 
     #region SteamVRController
     SteamVR_TrackedObject trackedObj;
@@ -71,12 +77,12 @@ public class LaserPointer : MonoBehaviour {
                 Ray ray = PlayerCamera.ScreenPointToRay(Input.mousePosition);
                 if (Physics.Raycast(ray, out hit, 100, teleportMask))
                 {
-                    NextObj = hit.collider.gameObject;
                     hitPoint = hit.collider.gameObject.transform.position;
                     ShowLaser(hit);
                     reticle.SetActive(true);
                     teleportReticleTransform.position = hitPoint + teleportReticleOffset;
-
+                    HitObject = hit.collider.gameObject;
+                    shouldTeleport = true;
                 }
                 else
                 {
@@ -84,10 +90,16 @@ public class LaserPointer : MonoBehaviour {
                     reticle.SetActive(false);
                 }
             }
-            if(Input.GetMouseButtonUp(0))
+            if(Input.GetMouseButtonUp(0)&&shouldTeleport==true)
             {
-                Teleport();
                 laser.SetActive(false);
+                GimmickCheck();
+                if (HitObject.name != "Door")
+                {
+                    Teleport();
+
+                }
+                HitObject = null;
             }
             CameraRot();
             
@@ -104,7 +116,7 @@ public class LaserPointer : MonoBehaviour {
 
                     hitPoint = hit.point;
                     ShowLaser(hit);
-
+                    HitObject = hit.collider.gameObject;
                     reticle.SetActive(true);
                     teleportReticleTransform.position = hitPoint + teleportReticleOffset;
                     shouldTeleport = true;
@@ -118,14 +130,42 @@ public class LaserPointer : MonoBehaviour {
             }
             if (Controller.GetPressUp(SteamVR_Controller.ButtonMask.Touchpad) && shouldTeleport)
             {
-                Teleport();
+                laser.SetActive(false);
+                GimmickCheck();
+                if(HitObject.name!="Door")
+                {
+                    Teleport();
+                }
+                HitObject = null;
             }
         }
-        
+        if(MoveCount==0)
+        {
+            IsGameOver = true;
+        }
+        GameObject Goal = GameObject.Find("Goal");
+        if(Vector3.Distance(Goal.transform.position,PlayerCamera.transform.position)<1.0f)
+        {
+            IsGoal = true;
+        }
     }
 
 
-
+    void GimmickCheck()
+    {
+        if(HitObject!=null)
+        {
+            if(HitObject.tag=="Gimmick")
+            {
+                HitObject.GetComponent<GimmickBaseClass>().isGimmickSet = true;
+            }
+         
+            if(HitObject.name=="Goal")
+            {
+               
+            }
+        }
+    }
 
     private void ShowLaser(RaycastHit hit)
     {
@@ -152,6 +192,7 @@ public class LaserPointer : MonoBehaviour {
         Vector3 difference = cameraRigTransform.position - headTransform.position;
         difference.y = 0.0f;
         cameraRigTransform.position = hitPoint + difference;
+        MoveCount--;
 
     }
 

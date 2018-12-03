@@ -25,7 +25,7 @@ public class AutomaticDoor : MonoBehaviour {
 
     [Header("オプション")]
     [SerializeField]
-    bool IsAutoClose;
+    bool IsAutoClose = false;
     //--AutoClose用変数--//
     [SerializeField]
     float m_AutoCloseTime;
@@ -42,12 +42,16 @@ public class AutomaticDoor : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
+        if(this.GetComponent<GimmickBaseClass>().isGimmickSet==true)
+        {
+            isOpen = true;
+        }
 
         //--開閉処理--//
         //--開く--//
         if (isOpen)
         {
+            this.GetComponent<BoxCollider>().enabled = false;
             //--距離が離れているなら--//
             //LEFT
             float dis = Vector3.Distance(m_LeftDoor.localPosition, m_LeftDoorFixed.localPosition);
@@ -63,6 +67,10 @@ public class AutomaticDoor : MonoBehaviour {
             {
                 //--移動--//
                 m_RightDoor.localPosition = Vector3.Lerp(m_RightDoor.localPosition, m_RightDoorFixed.localPosition, m_OpenSpeed * Time.deltaTime);
+            }
+            if(dis<=0)
+            {
+               
             }
         }
         //--閉める--//

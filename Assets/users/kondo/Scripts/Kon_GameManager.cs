@@ -6,11 +6,11 @@ using UnityEngine.SceneManagement;
 
 public class Kon_GameManager : MonoBehaviour {
 
+    public GameObject Player;
 
     [Header("Stage関係")]
     //--テレポートスクリプト--//
-    [SerializeField]
-    kon_tele m_Kontere;
+
 
     //--ステージのスタート位置--//
     [SerializeField]
@@ -22,7 +22,6 @@ public class Kon_GameManager : MonoBehaviour {
 
         STAGEMAX
     }
-    int m_NowStage;
 
     [Header("UI関係")]
     //--UI--//
@@ -50,35 +49,37 @@ public class Kon_GameManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        m_NowStage = (int)STAGENO.STAGE01;
-        m_Kontere.SetNextStage(m_StageStart[m_NowStage],m_StageStart[m_NowStage].GetComponent<kon_StageStartMoveCount>().m_StageStartMoveCount);
+      
         isFadeOut = false;
     }
 	
 	// Update is called once per frame
 	void Update () {
 
+        
+
+        int MoveCount = Player.GetComponent<LaserPointer>().MoveCount;
         Color col = new Color(1, 1, 1, 1);
-        if(m_Kontere.m_LastMoveCount==0)
+        if(MoveCount == 0)
         {
             col.g = col.b = 0;
         }
-        if (m_Kontere.m_LastMoveCount == 1)
+        if (MoveCount == 1)
         {
             col.b = 0;
         }
         m_CountText.color = col;
-        m_CountText.text = "残り移動回数 : " + m_Kontere.m_LastMoveCount.ToString();
+        m_CountText.text = "残り移動回数 : " + MoveCount.ToString();
 
 
         //--クリア フェードアウト--//
-        if (m_Kontere.ISGoal())
+        if (Player.GetComponent<LaserPointer>().IsGoal)
         {
             isFadeOut = true;
             m_ClearText.enabled = true;
         }
         //--ゲームオーバー フェードアウト--//
-        if (m_Kontere.ISGameOver())
+        if (Player.GetComponent<LaserPointer>().IsGameOver)
         {
             isFadeOut_Red = true;
             m_FadeObj_RedColor.enabled = true;
@@ -99,14 +100,9 @@ public class Kon_GameManager : MonoBehaviour {
             //--フェード終了　ステージ遷移--//
             if (m_FadeObj.color.a >= 1)
             {
-                m_NowStage += 1;
-                //--最終ステージクリア--//
-                if (m_NowStage >= (int)STAGENO.STAGEMAX)
-                {
-                    SceneManager.LoadScene("kon_result");
-                    m_NowStage = 0;
-                }
-                m_Kontere.SetNextStage(m_StageStart[m_NowStage], m_StageStart[m_NowStage].GetComponent<kon_StageStartMoveCount>().m_StageStartMoveCount);
+
+                SceneManager.LoadScene("kon_result");
+                
                 isFadeOut = false;
                 m_ClearText.enabled = false;
 
@@ -147,7 +143,6 @@ public class Kon_GameManager : MonoBehaviour {
             //--フェード終了　スタートへ--//
             if (m_FadeObj_RedColor.color.a >= 1)
             {
-                m_Kontere.ResetStage(m_StageStart[m_NowStage], m_StageStart[m_NowStage].GetComponent<kon_StageStartMoveCount>().m_StageStartMoveCount);
                 isFadeOut = false;
                 m_ClearText.enabled = false;
 
