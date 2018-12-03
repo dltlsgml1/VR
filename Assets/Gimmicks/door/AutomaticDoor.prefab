@@ -242,7 +242,7 @@ GameObject:
   - component: {fileID: 65260545148979670}
   m_Layer: 0
   m_Name: AutomaticDoor
-  m_TagString: Untagged
+  m_TagString: Gimmick
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1035,3 +1035,5 @@ MonoBehaviour:
   m_LeftDoorFixed: {fileID: 4141501975613980}
   m_RightDoor: {fileID: 4572959247192238}
   m_RightDoorFixed: {fileID: 4056020602685726}
+  IsAutoClose: 0
+  m_AutoCloseTime: 0

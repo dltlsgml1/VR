@@ -99,15 +99,15 @@ public class kon_tele : MonoBehaviour
 
         teleportReticleTransform = reticle.transform;
 
-         
+        m_camera = m_head.GetComponent<Camera>();
+        m_headTransform = m_head.transform;
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        m_camera = m_head.GetComponent<Camera>();
-        m_headTransform = m_head.transform;
+        
 
         //--マウス操作時--//
         if (isMouse)

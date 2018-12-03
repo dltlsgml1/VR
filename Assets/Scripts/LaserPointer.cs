@@ -87,6 +87,7 @@ public class LaserPointer : MonoBehaviour {
             if(Input.GetMouseButtonUp(0))
             {
                 Teleport();
+                laser.SetActive(false);
             }
             CameraRot();
             
@@ -129,8 +130,14 @@ public class LaserPointer : MonoBehaviour {
     private void ShowLaser(RaycastHit hit)
     {
         laser.SetActive(true);
-       // laserTransform.position = Vector3.Lerp(trackedObj.transform.position, hitPoint, 0.5f);
-        laserTransform.position = Vector3.Lerp(PlayerCamera.ScreenToWorldPoint(Input.mousePosition), hitPoint, 0.5f);
+        if (IsMouse == true) 
+        {
+            laserTransform.position = Vector3.Lerp(PlayerCamera.ScreenToWorldPoint(Input.mousePosition), hitPoint, 0.5f);
+        }
+        else
+        {
+            laserTransform.position = Vector3.Lerp(trackedObj.transform.position, hitPoint, 0.5f);
+        }
         laserTransform.LookAt(hitPoint);
         laserTransform.localScale = new Vector3(laserTransform.localScale.x, laserTransform.localScale.y, hit.distance);
     }
@@ -143,7 +150,7 @@ public class LaserPointer : MonoBehaviour {
         shouldTeleport = false;
         reticle.SetActive(false);
         Vector3 difference = cameraRigTransform.position - headTransform.position;
-        difference.y = 0;
+        difference.y = 0.0f;
         cameraRigTransform.position = hitPoint + difference;
 
     }
