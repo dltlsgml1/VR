@@ -6,7 +6,7 @@ using Valve.VR;
 public class LaserPointer : MonoBehaviour {
 
     public GameObject HitObject = null;
-    public int MoveCount;
+    public GameObject GameManager;
 
     public bool IsMouse;
     public bool MouseReverse;
@@ -120,6 +120,13 @@ public class LaserPointer : MonoBehaviour {
                     reticle.SetActive(true);
                     teleportReticleTransform.position = hitPoint + teleportReticleOffset;
                     shouldTeleport = true;
+
+                    //hitPoint = hit.collider.gameObject.transform.position;
+                    //ShowLaser(hit);
+                    //reticle.SetActive(true);
+                    //teleportReticleTransform.position = hitPoint + teleportReticleOffset;
+                    //HitObject = hit.collider.gameObject;
+                    //shouldTeleport = true;
                 }
 
             }
@@ -139,14 +146,11 @@ public class LaserPointer : MonoBehaviour {
                 HitObject = null;
             }
         }
-        if(MoveCount==0)
-        {
-            IsGameOver = true;
-        }
+      
         GameObject Goal = GameObject.Find("Goal");
-        if(Vector3.Distance(Goal.transform.position,PlayerCamera.transform.position)<1.0f)
+        if(Vector3.Distance(Goal.transform.position,cameraRigTransform.transform.position)<2.0f)
         {
-            IsGoal = true;
+            Kon_GameManager.IsGoal = true;
         }
     }
 
@@ -192,7 +196,8 @@ public class LaserPointer : MonoBehaviour {
         Vector3 difference = cameraRigTransform.position - headTransform.position;
         difference.y = 0.0f;
         cameraRigTransform.position = hitPoint + difference;
-        MoveCount--;
+        GameManager.GetComponent<Kon_GameManager>().MoveCount--;
+
 
     }
 

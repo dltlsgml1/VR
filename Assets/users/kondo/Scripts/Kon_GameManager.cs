@@ -7,7 +7,10 @@ using UnityEngine.SceneManagement;
 public class Kon_GameManager : MonoBehaviour {
 
     public GameObject Player;
-
+    public int MoveCount;
+    public static bool IsGoal = false;
+    public static bool IsGameOver = false;
+    public TextMesh CountMesh;
     [Header("Stage関係")]
     //--テレポートスクリプト--//
 
@@ -58,31 +61,37 @@ public class Kon_GameManager : MonoBehaviour {
 
         
 
-        int MoveCount = Player.GetComponent<LaserPointer>().MoveCount;
+        
         Color col = new Color(1, 1, 1, 1);
         if(MoveCount == 0)
         {
             col.g = col.b = 0;
+            IsGameOver = true;
         }
         if (MoveCount == 1)
         {
             col.b = 0;
         }
-        m_CountText.color = col;
-        m_CountText.text = "残り移動回数 : " + MoveCount.ToString();
 
+        CountMesh.color = col;
+        CountMesh.text = "残り移動回数 : " + MoveCount.ToString();
+
+        //m_CountText.color = col;
+        //m_CountText.text = "残り移動回数 : " + MoveCount.ToString();
+        //m_CountText.transform.LookAt(Camera.main.transform);
 
         //--クリア フェードアウト--//
-        if (Player.GetComponent<LaserPointer>().IsGoal)
+        if (IsGoal)
         {
             isFadeOut = true;
-            m_ClearText.enabled = true;
+            //m_ClearText.enabled = true;
         }
         //--ゲームオーバー フェードアウト--//
-        if (Player.GetComponent<LaserPointer>().IsGameOver)
+        if (IsGameOver)
         {
-            isFadeOut_Red = true;
-            m_FadeObj_RedColor.enabled = true;
+            isFadeOut = true;
+            //isFadeOut_Red = true;
+            //m_FadeObj_RedColor.enabled = true;
         }
 
         Fade();
